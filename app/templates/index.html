@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Display Webcam Stream</title>
+ 
+<style>
+#container {
+	margin: 0px auto;
+	width: 500px;
+	height: 375px;
+	border: 10px #333 solid;
+}
+#videoElement {
+	width: 500px;
+	height: 375px;
+	background-color: #666;
+}
+</style>
+</head>
+ 
+<body>
+<center>
+<form method = "POST" id = "myForm">
+<div id="container">
+	<video autoplay="true" id="videoElement">
+	
+	</video>
+</div>
+<input type="button" name="click-photo" id="click-photo" value="capture image" style="display:none">
+<input type="button" name="butajax" id="butajax" value="capture image">
+<input type="button" name="butajax2" id="butajax2" value="check result">
+<br>
+<canvas id="canvas" width="320" height="240" style="display:none"></canvas>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script>
+var video = document.querySelector("#videoElement");
+var click_button = document.querySelector("#click-photo");
+var click_button2 = document.querySelector("#butajax");	
+var click_button3 = document.querySelector("#butajax2");	
+var canvas = document.querySelector("#canvas");
+var counter = 0;
+var checkcounter = 0;
+/*
+setInterval(AutodisplayImage, 5000);
+
+function AutodisplayImage() {
+	if(counter==0)
+	{
+		
+	}else
+	{
+		if (checkcounter==0)
+		{
+			checkcounter =1;
+			canvas.style.display="block";
+			canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+			let image_data_url = canvas.toDataURL('image/jpeg');
+			canvas.style.display="none";
+			$.ajax({type:'POST',
+				url: '/api/info',
+				data:{
+				  todo:image_data_url
+				},
+				success: function(data) {
+					//alert(data);
+					document.getElementById("mypic").src="data:image/jpeg;base64,"+data;
+					checkcounter = 0;
+				}
+			       });
+			
+		}
+		
+		
+	}
+}	
+*/	
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err0r) {
+      console.log("Something went wrong!");
+    });
+}
+
+click_button.addEventListener('click', function() {
+	canvas.style.display="block";
+   	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+   	let image_data_url = canvas.toDataURL('image/jpeg');
+
+   	// data url of the image
+   	console.log(image_data_url);
+	document.getElementById("txt64").value = image_data_url;
+	canvas.style.display="none";
+	document.getElementById("myForm").submit();
+});
+click_button2.addEventListener('click', function() {
+	
+	canvas.style.display="block";
+   	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+	let image_data_url = canvas.toDataURL('image/jpeg');
+	canvas.style.display="none";
+	$.ajax({type:'POST',
+		url: '/api/info',
+		data:{
+		  todo:image_data_url
+		},
+		success: function(data) {
+			//alert(data);
+			document.getElementById("mypic").src="data:image/jpeg;base64,"+data;
+		}
+	       });
+	/*
+	if (counter == 0)
+	{
+		counter = 1;
+	}else
+	{
+		counter = 0;
+	}
+	*/
+	
+});
+click_button3.addEventListener('click', function() {
+	
+	canvas.style.display="block";
+   	canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+	let image_data_url = canvas.toDataURL('image/jpeg');
+	canvas.style.display="none";
+	$.ajax({type:'POST',
+		url: '/api/checkanswer',
+		data:{
+		  todo:image_data_url
+		},
+		success: function(data) {
+			//alert(data);
+			document.getElementById("mypic").src="data:image/jpeg;base64,"+data;
+		}
+	       });
+
+});
+</script>
+<input type="hidden" name="txt64" id="txt64">
+<img src="data:image/jpeg;base64,{{ user_image }}" alt="User Image" width="320" id="mypic">
+
+</form>
+</center>	
+</body>
+</html>
